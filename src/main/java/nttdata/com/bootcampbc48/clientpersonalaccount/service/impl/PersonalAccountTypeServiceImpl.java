@@ -4,16 +4,15 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
+import nttdata.com.bootcampbc48.clientpersonalaccount.adapter.Adapter;
+import nttdata.com.bootcampbc48.clientpersonalaccount.dto.CreateAccountTypeClientDto;
+import nttdata.com.bootcampbc48.clientpersonalaccount.dto.DeleteAccountTypeClientDto;
+import nttdata.com.bootcampbc48.clientpersonalaccount.dto.UpdateAccountTypeClientDto;
+import nttdata.com.bootcampbc48.clientpersonalaccount.entity.AccountType;
+import nttdata.com.bootcampbc48.clientpersonalaccount.repository.PersonalAccountTypeRepository;
 import nttdata.com.bootcampbc48.clientpersonalaccount.service.PersonalAccountTypeService;
-import nttdata.com.bootcampbc48.personalclient.adapter.Adapter;
-import nttdata.com.bootcampbc48.personalclient.dto.CreatePersonalClientDto;
-import nttdata.com.bootcampbc48.personalclient.dto.DeletePersonalClientDto;
-import nttdata.com.bootcampbc48.personalclient.dto.UpdatePersonalClientDto;
-import nttdata.com.bootcampbc48.personalclient.entity.PersonalClient;
-import nttdata.com.bootcampbc48.personalclient.repository.PersonalClientRepository;
-import nttdata.com.bootcampbc48.personalclient.service.PersonalClientService;
-import nttdata.com.bootcampbc48.personalclient.util.handler.exceptions.BadRequestException;
-import nttdata.com.bootcampbc48.personalclient.util.mapper.PersonalClientModelMapper;
+import nttdata.com.bootcampbc48.clientpersonalaccount.util.handler.exceptions.BadRequestException;
+import nttdata.com.bootcampbc48.clientpersonalaccount.util.mapper.PersonalAccountTypeModelMapper;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -22,11 +21,11 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class PersonalAccountTypeServiceImpl implements PersonalAccountTypeService {
 
-    static PersonalClientModelMapper modelMapper = PersonalClientModelMapper.singleInstance();
-    public final PersonalClientRepository repository;
+    static PersonalAccountTypeModelMapper modelMapper = PersonalAccountTypeModelMapper.singleInstance();
+    public final PersonalAccountTypeRepository repository;
 
     @Override
-    public Flowable<PersonalClient> findAll() {
+    public Flowable<AccountType> findAll() {
         return Adapter.fluxConverter(repository.findAll())
                 .switchIfEmpty(Flowable.error(new BadRequestException(
                         "ID",
@@ -38,7 +37,7 @@ public class PersonalAccountTypeServiceImpl implements PersonalAccountTypeServic
     }
 
     @Override
-    public Single<PersonalClient> findById(String id) {
+    public Single<AccountType> findById(String id) {
         return Adapter.monoConverter(repository.findById(id))
                 .switchIfEmpty(Maybe.error(new BadRequestException(
                         "ID",
@@ -47,39 +46,39 @@ public class PersonalAccountTypeServiceImpl implements PersonalAccountTypeServic
                         getClass(),
                         "getByDocumentNumber.switchIfEmpty"
                 )))
-                .cast(PersonalClient.class).toSingle();
+                .cast(AccountType.class).toSingle();
     }
 
     @Override
-    public Single<PersonalClient> findByDocumentNumber(String documentNumber) {
-        return Adapter.monoConverter(repository.findByDocumentNumber(documentNumber))
+    public Single<AccountType> findByAbbreviation(String abbreviation) {
+        return Adapter.monoConverter(repository.findByAbbreviation(abbreviation))
 
                 .switchIfEmpty(Maybe.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to get an item.",
-                        "The personal client with document number " + documentNumber + " does not exists.",
+                        "The personal client with abbreviation " + abbreviation + " does not exists.",
                         getClass(),
                         "getByDocumentNumber.switchIfEmpty"
                 )))
-                .cast(PersonalClient.class).toSingle();
+                .cast(AccountType.class).toSingle();
 
     }
 
     @Override
-    public Single<PersonalClient> create(CreatePersonalClientDto createPersonalClientDto) {
+    public Single<AccountType> create(CreateAccountTypeClientDto createAccountTypeClientDto) {
 
-        return Adapter.monoConverter(repository.findByDocumentNumber(createPersonalClientDto.getDocumentNumber()))
+        return Adapter.monoConverter(repository.findById(createAccountTypeClientDto.getAbbreviation()))
                 .map(p -> {
                     throw new BadRequestException(
                             "DocumentNumber",
-                            "[save] The document number " + createPersonalClientDto.getDocumentNumber() + " is already in use.",
+                            "[save] The document number " + createAccountTypeClientDto.getAbbreviation() + " is already in use.",
                             "An error occurred while trying to create an item.",
                             getClass(),
                             "save"
                     );
                 })
                 .switchIfEmpty(Maybe.defer(() ->
-                        Adapter.monoConverter(repository.save(modelMapper.reverseMapCreateWithDate(createPersonalClientDto)))
+                        Adapter.monoConverter(repository.save(modelMapper.reverseMapCreateWithDate(createAccountTypeClientDto)))
                 ))
                 .doOnError(e -> Mono.error(new BadRequestException(
                         "ERROR",
@@ -88,16 +87,16 @@ public class PersonalAccountTypeServiceImpl implements PersonalAccountTypeServic
                         getClass(),
                         "save.onErrorResume"
                 )))
-                .cast(PersonalClient.class).toSingle();
+                .cast(AccountType.class).toSingle();
     }
 
 
     @Override
-    public Single<PersonalClient> update(UpdatePersonalClientDto updatePersonalClientDto) {
+    public Single<AccountType> update(UpdateAccountTypeClientDto updateAccountTypeClientDto) {
 
-        return Adapter.monoConverter(repository.findByDocumentNumber(updatePersonalClientDto.getDocumentNumber()))
-                .switchIfEmpty(Maybe.error(new Exception("An item with the document number " + updatePersonalClientDto.getDocumentNumber() + " was not found. >> switchIfEmpty")))
-                .flatMap(p -> Adapter.monoConverter(repository.save(modelMapper.reverseMapUpdate(p, updatePersonalClientDto))))
+        return Adapter.monoConverter(repository.findById(updateAccountTypeClientDto.getId()))
+                .switchIfEmpty(Maybe.error(new Exception("An item with the id number " + updateAccountTypeClientDto.getId() + " was not found. >> switchIfEmpty")))
+                .flatMap(p -> Adapter.monoConverter(repository.save(modelMapper.reverseMapUpdate(p, updateAccountTypeClientDto))))
                 .doOnError(e -> Mono.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to update an item.",
@@ -108,11 +107,11 @@ public class PersonalAccountTypeServiceImpl implements PersonalAccountTypeServic
     }
 
     @Override
-    public Single<PersonalClient> delete(DeletePersonalClientDto deletePersonalClientDto) {
+    public Single<AccountType> delete(DeleteAccountTypeClientDto deleteAccountTypeClientDto) {
 
-        return Adapter.monoConverter(repository.findByDocumentNumber(deletePersonalClientDto.getDocumentNumber())
-                        .switchIfEmpty(Mono.error(new Exception("An item with the document number " + deletePersonalClientDto.getDocumentNumber() + " was not found. >> switchIfEmpty")))
-                        .flatMap(p -> repository.save(modelMapper.reverseMapDelete(p, deletePersonalClientDto))))
+        return Adapter.monoConverter(repository.findById(deleteAccountTypeClientDto.getId())
+                        .switchIfEmpty(Mono.error(new Exception("An item with the id number " + deleteAccountTypeClientDto.getId() + " was not found. >> switchIfEmpty")))
+                        .flatMap(p -> repository.save(modelMapper.reverseMapDelete(p, deleteAccountTypeClientDto))))
                 .doOnError(e -> Mono.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to delete an item.",

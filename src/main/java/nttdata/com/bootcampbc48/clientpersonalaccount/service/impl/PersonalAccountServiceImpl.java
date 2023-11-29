@@ -78,7 +78,7 @@ public class PersonalAccountServiceImpl implements PersonalAccountService {
                     );
                 })
                 .switchIfEmpty(repository.save(modelMapper.reverseMapCreateWithDate(createAccountClientDto)))
-                .doOnError(e -> Mono.error(new BadRequestException(
+                .doOnError(e -> Single.error(new BadRequestException(
                         "ERROR",
                         "An error occurred while trying to create an item.",
                         e.getMessage(),
@@ -92,21 +92,15 @@ public class PersonalAccountServiceImpl implements PersonalAccountService {
     public Single<Account> update(UpdateAccountClientDto updateAccountClientDto) {
 
         return Adapter.monoConverter(repository.findById(updateAccountClientDto.getId())
-                .switchIfEmpty(Mono.error(new BadRequestException(
-                        "idClient",
-                        "An error occurred while trying to update an item.",
-                        "The personal client with document number " + updateAccountClientDto.getId() + " does not exists.",
-                        getClass(),
-                        "update.onErrorResume"
-                )))
-                .flatMap(p -> Adapter.monoConverter(repository.save(modelMapper.reverseMapUpdate(p, updateAccountClientDto))))
+                .switchIfEmpty(Mono.error(new Exception("An item with the document number " + updateAccountClientDto.getId() + " was not found. >> switchIfEmpty")))
+                .map(p -> Adapter.monoConverter(repository.save(modelMapper.reverseMapUpdate(p, updateAccountClientDto))))
                 .doOnError(e -> Mono.error(new BadRequestException(
                         "idClient",
                         "An error occurred while trying to update an item.",
                         e.getMessage(),
                         getClass(),
                         "update.onErrorResume"
-                ))).toSingle();
+                ))).cast(Account.class)).toSingle();
     }
 
     @Override
@@ -122,19 +116,5 @@ public class PersonalAccountServiceImpl implements PersonalAccountService {
                         getClass(),
                         "update.onErrorResume"
                 ))).toSingle();
-    }
-
-    private boolean verifyDuplicateAccounts(String accountTypeRegister, String accountTypeExist) {
-        boolean result = false;
-        switch (accountTypeRegister) {
-            case value: {
-
-                yield type;
-            }
-            default:
-                throw new IllegalArgumentException("Unexpected value: " + accountTypeRegister);
-        }
-
-        return result;
     }
 }

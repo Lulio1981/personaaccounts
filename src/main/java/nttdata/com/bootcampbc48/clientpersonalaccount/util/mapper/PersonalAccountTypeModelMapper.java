@@ -1,6 +1,7 @@
 package nttdata.com.bootcampbc48.clientpersonalaccount.util.mapper;
 
 import nttdata.com.bootcampbc48.clientpersonalaccount.dto.CreateAccountTypeClientDto;
+import nttdata.com.bootcampbc48.clientpersonalaccount.dto.DeleteAccountTypeClientDto;
 import nttdata.com.bootcampbc48.clientpersonalaccount.dto.UpdateAccountTypeClientDto;
 import nttdata.com.bootcampbc48.clientpersonalaccount.entity.AccountType;
 import org.modelmapper.ModelMapper;
@@ -36,15 +37,19 @@ public class PersonalAccountTypeModelMapper {
 
     public AccountType reverseMapUpdate(AccountType accountType, UpdateAccountTypeClientDto updateDto) {
 
-        personalClient.setProfile(updateDto.getProfile());
-        personalClient.setFirstName(updateDto.getFirstName());
-        personalClient.setLastName(updateDto.getLastName());
-        personalClient.setResidenceAddress(updateDto.getResidenceAddress());
+        accountType.setAbbreviation(updateDto.getAbbreviation());
+        accountType.setDescription(updateDto.getDescription());
+        accountType.setInterestRate(updateDto.getInterestRate());
+        accountType.setMaintenanceCost(updateDto.getMaintenanceCost());
+        accountType.setMinimumBalance(updateDto.getMinimumBalance());
+        accountType.setTransactionFee(updateDto.getTransactionFee());
+        accountType.setTransactionPermissionDate(updateDto.getTransactionPermissionDate());
+        accountType.setTransactionsNumber(updateDto.getTransactionsNumber());
 
-        return personalClient;
+        return accountType;
     }
 
-    public AccountType reverseMapDelete(AccountType personalClient, DeletePersonalClientDto deleteDto) {
+    public AccountType reverseMapDelete(AccountType personalClient, DeleteAccountTypeClientDto deleteDto) {
 
         personalClient.setRegistrationStatus((short) 0);
 

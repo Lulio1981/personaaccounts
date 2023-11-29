@@ -4,11 +4,11 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import nttdata.com.bootcampbc48.personalclient.dto.CreatePersonalClientDto;
-import nttdata.com.bootcampbc48.personalclient.dto.DeletePersonalClientDto;
-import nttdata.com.bootcampbc48.personalclient.dto.UpdatePersonalClientDto;
-import nttdata.com.bootcampbc48.personalclient.entity.PersonalClient;
-import nttdata.com.bootcampbc48.personalclient.service.impl.PersonalClientServiceImpl;
+import nttdata.com.bootcampbc48.clientpersonalaccount.dto.CreateAccountClientDto;
+import nttdata.com.bootcampbc48.clientpersonalaccount.dto.DeleteAccountClientDto;
+import nttdata.com.bootcampbc48.clientpersonalaccount.dto.UpdateAccountClientDto;
+import nttdata.com.bootcampbc48.clientpersonalaccount.entity.Account;
+import nttdata.com.bootcampbc48.clientpersonalaccount.service.impl.PersonalAccountServiceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,23 +16,23 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 @RestController
-@RequestMapping("client/personal")
-@Tag(name = "Personal Clients Information", description = "Manage personal clients")
+@RequestMapping("client/personal/account")
+@Tag(name = "Personal Clients Account Information", description = "Manage personal clients account")
 @CrossOrigin(value = {"*"})
 @RequiredArgsConstructor
 public class PersonalAccountController {
 
-    public final PersonalClientServiceImpl service;
+    public final PersonalAccountServiceImpl service;
 
-    @GetMapping("/{documentNumber}")
-    public Single<ResponseEntity<PersonalClient>> findByDocumentNumber(@PathVariable String documentNumber) {
-        return service.findByDocumentNumber(documentNumber).map(client -> ResponseEntity.ok()
+    @GetMapping("/{idClient}")
+    public Flowable<ResponseEntity<Account>> findByIdClient(@PathVariable String idClient) {
+        return service.findByIdClient(idClient).map(client -> ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(client));
     }
 
     @GetMapping("/find/{id}")
-    public Single<ResponseEntity<PersonalClient>> findById(@PathVariable String id) {
+    public Single<ResponseEntity<Account>> findById(@PathVariable String id) {
 
         return service.findById(id).map(client -> ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -40,16 +40,16 @@ public class PersonalAccountController {
     }
 
     @GetMapping
-    public ResponseEntity<Flowable<PersonalClient>> findAll() {
-        Flowable<PersonalClient> flowable = service.findAll();
+    public ResponseEntity<Flowable<Account>> findAll() {
+        Flowable<Account> flowable = service.findAll();
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(flowable);
     }
 
     @PostMapping
-    public Single<ResponseEntity<PersonalClient>> create(@RequestBody CreatePersonalClientDto createPersonalClientDto) {
-        return service.create(createPersonalClientDto).map(p -> ResponseEntity
+    public Single<ResponseEntity<Account>> create(@RequestBody CreateAccountClientDto createAccountClientDto) {
+        return service.create(createAccountClientDto).map(p -> ResponseEntity
                 .created(URI.create("/client/personal/".concat(p.getId())))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(p)
@@ -58,9 +58,9 @@ public class PersonalAccountController {
 
 
     @PutMapping
-    public Single<ResponseEntity<PersonalClient>> update(@RequestBody UpdatePersonalClientDto updatePersonalClientDto) {
-        return service.update(updatePersonalClientDto)
-                .map(p -> ResponseEntity.created(URI.create("/client/personal/"
+    public Single<ResponseEntity<Account>> update(@RequestBody UpdateAccountClientDto updateAccountClientDto) {
+        return service.update(updateAccountClientDto)
+                .map(p -> ResponseEntity.created(URI.create("/client/personal/account"
                                 .concat(p.getId())
                         ))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -68,9 +68,9 @@ public class PersonalAccountController {
     }
 
     @DeleteMapping
-    public Single<ResponseEntity<PersonalClient>> delete(@RequestBody DeletePersonalClientDto deletePersonalClientDto) {
-        return service.delete(deletePersonalClientDto)
-                .map(p -> ResponseEntity.created(URI.create("/client/personal/"
+    public Single<ResponseEntity<Account>> delete(@RequestBody DeleteAccountClientDto deleteAccountClientDto) {
+        return service.delete(deleteAccountClientDto)
+                .map(p -> ResponseEntity.created(URI.create("/client/personal/account"
                                 .concat(p.getId())
                         ))
                         .contentType(MediaType.APPLICATION_JSON)

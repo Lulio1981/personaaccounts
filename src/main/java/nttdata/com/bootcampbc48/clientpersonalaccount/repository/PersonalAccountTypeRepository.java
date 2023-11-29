@@ -11,4 +11,5 @@ public interface PersonalAccountTypeRepository extends ReactiveMongoRepository<A
 
     public Mono<AccountType> findById(String id);
 
+    public Mono<AccountType> findByAbbreviation(String abbreviation);
 }

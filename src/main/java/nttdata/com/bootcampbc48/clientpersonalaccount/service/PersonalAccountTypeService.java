@@ -2,21 +2,23 @@ package nttdata.com.bootcampbc48.clientpersonalaccount.service;
 
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
-import nttdata.com.bootcampbc48.clientpersonalaccount.dto.CreateAccountClientDto;
-import nttdata.com.bootcampbc48.clientpersonalaccount.dto.DeleteAccountClientDto;
-import nttdata.com.bootcampbc48.clientpersonalaccount.dto.UpdateAccountClientDto;
-import nttdata.com.bootcampbc48.clientpersonalaccount.entity.Account;
+import nttdata.com.bootcampbc48.clientpersonalaccount.dto.*;
+import nttdata.com.bootcampbc48.clientpersonalaccount.entity.AccountType;
+import nttdata.com.bootcampbc48.clientpersonalaccount.entity.AccountType;
+import reactor.core.publisher.Mono;
 
 public interface PersonalAccountTypeService {
-    public Single<Account> create(CreateAccountClientDto createAccountClientDto);
+    public Single<AccountType> create(CreateAccountTypeClientDto createAccountTypeClientDto);
 
-    public Flowable<Account> findAll();
+    public Flowable<AccountType> findAll();
 
-    public Single<Account> findById(String id);
+    public Single<AccountType> findById(String id);
 
-    public Single<Account> update(UpdateAccountClientDto updateAccountClientDto);
+    public Single<AccountType> findByAbbreviation(String abbreviation);
 
-    public Single<Account> delete(DeleteAccountClientDto deleteAccountClientDto);
+    public Single<AccountType> update(UpdateAccountTypeClientDto updateAccountTypeClientDto);
+
+    public Single<AccountType> delete(DeleteAccountTypeClientDto deleteAccountTypeClientDto);
 
 
 }
