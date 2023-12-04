@@ -1,10 +1,7 @@
 package nttdata.com.bootcampbc48.clientpersonalaccount.service.impl;
 
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Maybe;
-import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.*;
 import lombok.RequiredArgsConstructor;
-import nttdata.com.bootcampbc48.clientpersonalaccount.adapter.Adapter;
 import nttdata.com.bootcampbc48.clientpersonalaccount.dto.CreateAccountClientDto;
 import nttdata.com.bootcampbc48.clientpersonalaccount.dto.DeleteAccountClientDto;
 import nttdata.com.bootcampbc48.clientpersonalaccount.dto.UpdateAccountClientDto;
@@ -26,49 +23,49 @@ public class PersonalAccountServiceImpl implements PersonalAccountService {
 
     @Override
     public Flowable<Account> findAll() {
-        return Adapter.fluxConverter(repository.findAll())
+        return repository.findAll()
                 .switchIfEmpty(Flowable.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to get an item.",
-                        "The personal clients dont exist.",
+                        "The customer haven accounts.",
                         getClass(),
-                        "getByDocumentNumber.switchIfEmpty"
+                        "findAll.switchIfEmpty"
                 )));
     }
 
     @Override
     public Single<Account> findById(String id) {
-        return Adapter.monoConverter(repository.findById(id))
+        return repository.findById(id)
                 .switchIfEmpty(Maybe.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to get an item.",
                         "The personal client with id number " + id + " does not exists.",
                         getClass(),
-                        "getByDocumentNumber.switchIfEmpty"
+                        "findById.switchIfEmpty"
                 )))
                 .cast(Account.class).toSingle();
     }
 
     @Override
-    public Flowable<Account> findByIdClient(String idClient) {
-        return Adapter.fluxConverter(repository.findByIdClient(idClient))
+    public Flowable<Account> findByIdClientAndRegistrationStatus(String idClient, short registrationStatus) {
+        return repository.findByIdClientAndRegistrationStatus(idClient, registrationStatus)
                 .switchIfEmpty(Flowable.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to get an item.",
                         "The personal client with document number " + idClient + " does not exists.",
                         getClass(),
-                        "getByDocumentNumber.switchIfEmpty"
-                )))
-                .cast(Account.class);
+                        "findByIdClient.switchIfEmpty"
+                )));
 
     }
 
     @Override
     public Single<Account> create(CreateAccountClientDto createAccountClientDto) {
-
-        return Adapter.fluxConverter(repository.findByIdClient(createAccountClientDto.getIdClient()))
-                .filter(p -> p.getIdAccountType().equals(1) || p.getIdAccountType().equals(2))
-                .map(p -> {
+        return repository.findByIdClientAndRegistrationStatus(createAccountClientDto.getIdClient(), createAccountClientDto.getRegistrationStatus())
+                .filter(account -> !account.getIdAccountType().equals("6568f6fb13752c52feeaac6a")
+                        && account.getIdAccountType().equals(createAccountClientDto.getIdAccountType()))
+                .firstElement()
+                .map(account -> {
                     throw new BadRequestException(
                             "ClientId",
                             "[save] The client" + createAccountClientDto.getIdClient() + " have other accounts.",
@@ -84,37 +81,36 @@ public class PersonalAccountServiceImpl implements PersonalAccountService {
                         e.getMessage(),
                         getClass(),
                         "save.onErrorResume"
-                ))).toList().map(ee -> ee).cast(Account.class);
+                ))).cast(Account.class);
     }
-
 
     @Override
     public Single<Account> update(UpdateAccountClientDto updateAccountClientDto) {
 
-        return Adapter.monoConverter(repository.findById(updateAccountClientDto.getId())
-                .switchIfEmpty(Mono.error(new Exception("An item with the document number " + updateAccountClientDto.getId() + " was not found. >> switchIfEmpty")))
-                .map(p -> Adapter.monoConverter(repository.save(modelMapper.reverseMapUpdate(p, updateAccountClientDto))))
-                .doOnError(e -> Mono.error(new BadRequestException(
+        return repository.findById(updateAccountClientDto.getId())
+                .switchIfEmpty(Single.error(new Exception("An item with the document number " + updateAccountClientDto.getId() + " was not found. >> switchIfEmpty")))
+                .flatMap(p -> repository.save(modelMapper.reverseMapUpdate(p, updateAccountClientDto)))
+                .doOnError(e -> Single.error(new BadRequestException(
                         "idClient",
                         "An error occurred while trying to update an item.",
                         e.getMessage(),
                         getClass(),
                         "update.onErrorResume"
-                ))).cast(Account.class)).toSingle();
+                )));
     }
 
     @Override
     public Single<Account> delete(DeleteAccountClientDto deleteAccountClientDto) {
 
-        return Adapter.monoConverter(repository.findById(deleteAccountClientDto.getId())
-                        .switchIfEmpty(Mono.error(new Exception("An item with the document number " + deleteAccountClientDto.getId() + " was not found. >> switchIfEmpty")))
-                        .flatMap(p -> repository.save(modelMapper.reverseMapDelete(p, deleteAccountClientDto))))
+        return repository.findById(deleteAccountClientDto.getId())
+                .switchIfEmpty(Single.error(new Exception("An item with the document number " + deleteAccountClientDto.getId() + " was not found. >> switchIfEmpty")))
+                .flatMap(p -> repository.save(modelMapper.reverseMapDelete(p, deleteAccountClientDto)))
                 .doOnError(e -> Mono.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to delete an item.",
                         e.getMessage(),
                         getClass(),
                         "update.onErrorResume"
-                ))).toSingle();
+                )));
     }
 }

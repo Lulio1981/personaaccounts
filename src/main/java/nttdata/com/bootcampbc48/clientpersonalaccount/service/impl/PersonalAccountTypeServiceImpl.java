@@ -26,7 +26,7 @@ public class PersonalAccountTypeServiceImpl implements PersonalAccountTypeServic
 
     @Override
     public Flowable<AccountType> findAll() {
-        return Adapter.fluxConverter(repository.findAll())
+        return repository.findAll()
                 .switchIfEmpty(Flowable.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to get an item.",
@@ -38,7 +38,7 @@ public class PersonalAccountTypeServiceImpl implements PersonalAccountTypeServic
 
     @Override
     public Single<AccountType> findById(String id) {
-        return Adapter.monoConverter(repository.findById(id))
+        return repository.findById(id)
                 .switchIfEmpty(Maybe.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to get an item.",
@@ -51,7 +51,7 @@ public class PersonalAccountTypeServiceImpl implements PersonalAccountTypeServic
 
     @Override
     public Single<AccountType> findByAbbreviation(String abbreviation) {
-        return Adapter.monoConverter(repository.findByAbbreviation(abbreviation))
+        return repository.findByAbbreviation(abbreviation)
 
                 .switchIfEmpty(Maybe.error(new BadRequestException(
                         "ID",
@@ -67,7 +67,7 @@ public class PersonalAccountTypeServiceImpl implements PersonalAccountTypeServic
     @Override
     public Single<AccountType> create(CreateAccountTypeClientDto createAccountTypeClientDto) {
 
-        return Adapter.monoConverter(repository.findById(createAccountTypeClientDto.getAbbreviation()))
+        return repository.findById(createAccountTypeClientDto.getAbbreviation())
                 .map(p -> {
                     throw new BadRequestException(
                             "DocumentNumber",
@@ -77,9 +77,7 @@ public class PersonalAccountTypeServiceImpl implements PersonalAccountTypeServic
                             "save"
                     );
                 })
-                .switchIfEmpty(Maybe.defer(() ->
-                        Adapter.monoConverter(repository.save(modelMapper.reverseMapCreateWithDate(createAccountTypeClientDto)))
-                ))
+                .switchIfEmpty(repository.save(modelMapper.reverseMapCreateWithDate(createAccountTypeClientDto)))
                 .doOnError(e -> Mono.error(new BadRequestException(
                         "ERROR",
                         "An error occurred while trying to create an item.",
@@ -87,37 +85,37 @@ public class PersonalAccountTypeServiceImpl implements PersonalAccountTypeServic
                         getClass(),
                         "save.onErrorResume"
                 )))
-                .cast(AccountType.class).toSingle();
+                .cast(AccountType.class);
     }
 
 
     @Override
     public Single<AccountType> update(UpdateAccountTypeClientDto updateAccountTypeClientDto) {
 
-        return Adapter.monoConverter(repository.findById(updateAccountTypeClientDto.getId()))
-                .switchIfEmpty(Maybe.error(new Exception("An item with the id number " + updateAccountTypeClientDto.getId() + " was not found. >> switchIfEmpty")))
-                .flatMap(p -> Adapter.monoConverter(repository.save(modelMapper.reverseMapUpdate(p, updateAccountTypeClientDto))))
-                .doOnError(e -> Mono.error(new BadRequestException(
+        return repository.findById(updateAccountTypeClientDto.getId())
+                .switchIfEmpty(Single.error(new Exception("An item with the id number " + updateAccountTypeClientDto.getId() + " was not found. >> switchIfEmpty")))
+                .flatMap(p -> repository.save(modelMapper.reverseMapUpdate(p, updateAccountTypeClientDto)))
+                .doOnError(e -> Single.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to update an item.",
                         e.getMessage(),
                         getClass(),
                         "update.onErrorResume"
-                ))).toSingle();
+                ))).cast(AccountType.class);
     }
 
     @Override
     public Single<AccountType> delete(DeleteAccountTypeClientDto deleteAccountTypeClientDto) {
 
-        return Adapter.monoConverter(repository.findById(deleteAccountTypeClientDto.getId())
-                        .switchIfEmpty(Mono.error(new Exception("An item with the id number " + deleteAccountTypeClientDto.getId() + " was not found. >> switchIfEmpty")))
-                        .flatMap(p -> repository.save(modelMapper.reverseMapDelete(p, deleteAccountTypeClientDto))))
-                .doOnError(e -> Mono.error(new BadRequestException(
+        return repository.findById(deleteAccountTypeClientDto.getId())
+                .switchIfEmpty(Single.error(new Exception("An item with the id number " + deleteAccountTypeClientDto.getId() + " was not found. >> switchIfEmpty")))
+                .flatMap(p -> repository.save(modelMapper.reverseMapDelete(p, deleteAccountTypeClientDto)))
+                .doOnError(e -> Single.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to delete an item.",
                         e.getMessage(),
                         getClass(),
                         "update.onErrorResume"
-                ))).toSingle();
+                )));
     }
 }

@@ -17,7 +17,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("client/personal/accounttype")
-@Tag(name = "Personal Clients Information", description = "Manage personal clients")
+@Tag(name = "Account Type information", description = "Manage account types maintenance")
 @CrossOrigin(value = {"*"})
 @RequiredArgsConstructor
 public class PersonalAccountTypeController {
@@ -25,7 +25,7 @@ public class PersonalAccountTypeController {
     public final PersonalAccountTypeServiceImpl service;
 
     @GetMapping("/{abbreviation}")
-    public Single<ResponseEntity<AccountType>> findByDocumentNumber(@PathVariable String abbreviation) {
+    public Single<ResponseEntity<AccountType>> findByAbbreviation(@PathVariable String abbreviation) {
         return service.findByAbbreviation(abbreviation).map(client -> ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(client));
@@ -50,7 +50,7 @@ public class PersonalAccountTypeController {
     @PostMapping
     public Single<ResponseEntity<AccountType>> create(@RequestBody CreateAccountTypeClientDto createAccountTypeClientDto) {
         return service.create(createAccountTypeClientDto).map(p -> ResponseEntity
-                .created(URI.create("/client/personal/".concat(p.getId())))
+                .created(URI.create("/client/personal/accounttype".concat(p.getId())))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(p)
         );
@@ -60,7 +60,7 @@ public class PersonalAccountTypeController {
     @PutMapping
     public Single<ResponseEntity<AccountType>> update(@RequestBody UpdateAccountTypeClientDto updateAccountTypeClientDto) {
         return service.update(updateAccountTypeClientDto)
-                .map(p -> ResponseEntity.created(URI.create("/client/personal/"
+                .map(p -> ResponseEntity.created(URI.create("/client/personal/accounttype"
                                 .concat(p.getId())
                         ))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -70,7 +70,7 @@ public class PersonalAccountTypeController {
     @DeleteMapping
     public Single<ResponseEntity<AccountType>> delete(@RequestBody DeleteAccountTypeClientDto deleteAccountTypeClientDto) {
         return service.delete(deleteAccountTypeClientDto)
-                .map(p -> ResponseEntity.created(URI.create("/client/personal/"
+                .map(p -> ResponseEntity.created(URI.create("/client/personal/accounttype"
                                 .concat(p.getId())
                         ))
                         .contentType(MediaType.APPLICATION_JSON)

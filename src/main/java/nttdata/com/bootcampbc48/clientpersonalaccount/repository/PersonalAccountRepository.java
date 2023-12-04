@@ -1,16 +1,17 @@
 package nttdata.com.bootcampbc48.clientpersonalaccount.repository;
 
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Maybe;
 import nttdata.com.bootcampbc48.clientpersonalaccount.entity.Account;
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import org.springframework.data.repository.reactive.RxJava3CrudRepository;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
 
 @Repository
-public interface PersonalAccountRepository extends ReactiveMongoRepository<Account, String> {
+public interface PersonalAccountRepository extends RxJava3CrudRepository<Account, String> {
 
-    public Mono<Account> findById(String id);
+    public Maybe<Account> findById(String id);
 
-    public Flux<Account> findByIdClient(String idClient);
+    public Flowable<Account> findByIdClientAndRegistrationStatus(String idClient, short registrationStatus);
 
 }

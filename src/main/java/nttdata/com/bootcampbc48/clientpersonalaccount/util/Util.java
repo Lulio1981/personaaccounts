@@ -1,6 +1,6 @@
 package nttdata.com.bootcampbc48.clientpersonalaccount.util;
 
-import nttdata.com.bootcampbc48.personalclient.util.handler.exceptions.BadRequestException;
+import nttdata.com.bootcampbc48.clientpersonalaccount.util.handler.exceptions.BadRequestException;
 
 import java.util.Currency;
 import java.util.Objects;

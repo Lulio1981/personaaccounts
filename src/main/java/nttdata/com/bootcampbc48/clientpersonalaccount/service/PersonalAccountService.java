@@ -14,7 +14,7 @@ public interface PersonalAccountService {
 
     public Single<Account> findById(String id);
 
-    public Flowable<Account> findByIdClient(String idClient);
+    public Flowable<Account> findByIdClientAndRegistrationStatus(String idClient, short registrationStatus);
 
     public Single<Account> update(UpdateAccountClientDto updateAccountClientDto);
 

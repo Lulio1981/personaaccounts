@@ -1,8 +1,8 @@
 package nttdata.com.bootcampbc48.clientpersonalaccount.util.handler;
 
-import nttdata.com.bootcampbc48.personalclient.util.Util;
-import nttdata.com.bootcampbc48.personalclient.util.handler.exceptions.BadRequestException;
-import nttdata.com.bootcampbc48.personalclient.util.handler.exceptions.NotFoundException;
+import nttdata.com.bootcampbc48.clientpersonalaccount.util.Util;
+import nttdata.com.bootcampbc48.clientpersonalaccount.util.handler.exceptions.BadRequestException;
+import nttdata.com.bootcampbc48.clientpersonalaccount.util.handler.exceptions.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

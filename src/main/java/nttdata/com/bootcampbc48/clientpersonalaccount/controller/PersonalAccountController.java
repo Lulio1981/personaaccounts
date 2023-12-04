@@ -24,11 +24,11 @@ public class PersonalAccountController {
 
     public final PersonalAccountServiceImpl service;
 
-    @GetMapping("/{idClient}")
-    public Flowable<ResponseEntity<Account>> findByIdClient(@PathVariable String idClient) {
-        return service.findByIdClient(idClient).map(client -> ResponseEntity.ok()
+    @GetMapping("/{idClient}/{registrationStatus}")
+    public ResponseEntity<Flowable<Account>> findByIdClient(@PathVariable String idClient, @PathVariable short registrationStatus) {
+        return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(client));
+                .body(service.findByIdClientAndRegistrationStatus(idClient, registrationStatus));
     }
 
     @GetMapping("/find/{id}")
@@ -50,7 +50,7 @@ public class PersonalAccountController {
     @PostMapping
     public Single<ResponseEntity<Account>> create(@RequestBody CreateAccountClientDto createAccountClientDto) {
         return service.create(createAccountClientDto).map(p -> ResponseEntity
-                .created(URI.create("/client/personal/".concat(p.getId())))
+                .created(URI.create("/client/personal/".concat(p.get_id())))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(p)
         );
@@ -61,7 +61,7 @@ public class PersonalAccountController {
     public Single<ResponseEntity<Account>> update(@RequestBody UpdateAccountClientDto updateAccountClientDto) {
         return service.update(updateAccountClientDto)
                 .map(p -> ResponseEntity.created(URI.create("/client/personal/account"
-                                .concat(p.getId())
+                                .concat(p.get_id())
                         ))
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(p));
@@ -71,7 +71,7 @@ public class PersonalAccountController {
     public Single<ResponseEntity<Account>> delete(@RequestBody DeleteAccountClientDto deleteAccountClientDto) {
         return service.delete(deleteAccountClientDto)
                 .map(p -> ResponseEntity.created(URI.create("/client/personal/account"
-                                .concat(p.getId())
+                                .concat(p.get_id())
                         ))
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(p));
