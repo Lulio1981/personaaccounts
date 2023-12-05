@@ -19,7 +19,7 @@ public class CreateAccountTypeClientDto {
     private Date transactionPermissionDate;
     private short registrationStatus;
     private Date insertionDate;
-    private String fk_insertionUser;
+    private String insertionUser;
     private String insertionTerminal;
 
 }
