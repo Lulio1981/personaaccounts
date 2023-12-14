@@ -1,2 +1,8 @@
-    server:
-      port: 8082
+server:
+ port: 8082
+
+spring:
+  data:
+    mongodb:
+      uri: mongodb+srv://nttdatadb:nYUK5rr26fpJxkCM@bootcamp48.id8yl1x.mongodb.net/?retryWrites=true&w=majority
+      database: test
