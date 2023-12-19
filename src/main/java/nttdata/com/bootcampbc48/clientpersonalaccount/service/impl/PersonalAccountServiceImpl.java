@@ -48,7 +48,7 @@ public class PersonalAccountServiceImpl implements PersonalAccountService {
 
     @Override
     public Flowable<Account> findByIdClientAndRegistrationStatus(String idClient, short registrationStatus) {
-        return repository.findByIdClientAndRegistrationStatus(idClient, registrationStatus)
+        return repository.findByDocumentNumberAndRegistrationStatus(idClient, registrationStatus)
                 .switchIfEmpty(Flowable.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to get an item.",
@@ -61,14 +61,14 @@ public class PersonalAccountServiceImpl implements PersonalAccountService {
 
     @Override
     public Single<Account> create(CreateAccountClientDto createAccountClientDto) {
-        return repository.findByIdClientAndRegistrationStatus(createAccountClientDto.getIdClient(), createAccountClientDto.getRegistrationStatus())
+        return repository.findByDocumentNumberAndRegistrationStatus(createAccountClientDto.getDocumentNumber(), createAccountClientDto.getRegistrationStatus())
                 .filter(account -> !account.getIdAccountType().equals("6568f6fb13752c52feeaac6a")
                         && account.getIdAccountType().equals(createAccountClientDto.getIdAccountType()))
                 .firstElement()
                 .map(account -> {
                     throw new BadRequestException(
                             "ClientId",
-                            "[save] The client" + createAccountClientDto.getIdClient() + " have other accounts.",
+                            "[save] The client" + createAccountClientDto.getDocumentNumber() + " have other accounts.",
                             "An error occurred while trying to create an item.",
                             getClass(),
                             "save"
@@ -87,8 +87,8 @@ public class PersonalAccountServiceImpl implements PersonalAccountService {
     @Override
     public Single<Account> update(UpdateAccountClientDto updateAccountClientDto) {
 
-        return repository.findById(updateAccountClientDto.getId())
-                .switchIfEmpty(Single.error(new Exception("An item with the document number " + updateAccountClientDto.getId() + " was not found. >> switchIfEmpty")))
+        return repository.findByDocumentNumber(updateAccountClientDto.getDocumentNumber())
+                .switchIfEmpty(Single.error(new Exception("An item with the document number " + updateAccountClientDto.getDocumentNumber() + " was not found. >> switchIfEmpty")))
                 .flatMap(p -> repository.save(modelMapper.reverseMapUpdate(p, updateAccountClientDto)))
                 .doOnError(e -> Single.error(new BadRequestException(
                         "idClient",
@@ -102,8 +102,8 @@ public class PersonalAccountServiceImpl implements PersonalAccountService {
     @Override
     public Single<Account> delete(DeleteAccountClientDto deleteAccountClientDto) {
 
-        return repository.findById(deleteAccountClientDto.getId())
-                .switchIfEmpty(Single.error(new Exception("An item with the document number " + deleteAccountClientDto.getId() + " was not found. >> switchIfEmpty")))
+        return repository.findByDocumentNumber(deleteAccountClientDto.getDocumentNumber())
+                .switchIfEmpty(Single.error(new Exception("An item with the document number " + deleteAccountClientDto.getDocumentNumber() + " was not found. >> switchIfEmpty")))
                 .flatMap(p -> repository.save(modelMapper.reverseMapDelete(p, deleteAccountClientDto)))
                 .doOnError(e -> Mono.error(new BadRequestException(
                         "ID",

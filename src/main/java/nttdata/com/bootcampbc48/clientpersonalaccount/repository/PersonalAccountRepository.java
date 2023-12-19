@@ -10,8 +10,8 @@ import org.springframework.data.repository.reactive.RxJava3CrudRepository;
 @EnableReactiveMongoRepositories
 public interface PersonalAccountRepository extends RxJava3CrudRepository<Account, String> {
 
-    Maybe<Account> findById(String id);
+    Maybe<Account> findByDocumentNumber(String documentNumber);
 
-    Flowable<Account> findByIdClientAndRegistrationStatus(String idClient, short registrationStatus);
+    Flowable<Account> findByDocumentNumberAndRegistrationStatus(String documentNumber, short registrationStatus);
 
 }

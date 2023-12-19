@@ -7,7 +7,7 @@ import java.util.Date;
 @Data
 public class CreateAccountClientDto {
 
-    private String idClient;
+    private String documentNumber;
     private String accountNumber;
     private String idAccountType;
     private short registrationStatus;

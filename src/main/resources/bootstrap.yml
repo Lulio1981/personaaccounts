@@ -1,8 +1,17 @@
-server:
- port: 8082
-
 spring:
+  application:
+    name: ms-person-account
   data:
     mongodb:
       uri: mongodb+srv://nttdatadb:nYUK5rr26fpJxkCM@bootcamp48.id8yl1x.mongodb.net/?retryWrites=true&w=majority
       database: test
+
+eureka:
+  client:
+    #telling the server not to register himself in the service registry
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+server:
+  port: 8093

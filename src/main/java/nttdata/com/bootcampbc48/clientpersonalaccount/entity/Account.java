@@ -22,7 +22,7 @@ public class Account {
 
   @Id
   private String _id;
-  private String idClient;
+  private String documentNumber;
   private String accountNumber;
   private String idAccountType;
   private short registrationStatus;

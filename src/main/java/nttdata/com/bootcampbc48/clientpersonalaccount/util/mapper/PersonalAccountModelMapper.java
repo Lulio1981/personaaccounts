@@ -28,6 +28,7 @@ public class PersonalAccountModelMapper {
     //MAPPERS BEGIN
     public Account reverseMapCreateWithDate(CreateAccountClientDto createAccountClientDto) {
         Account personalClient = mapper.map(createAccountClientDto, Account.class);
+        personalClient.setDocumentNumber(createAccountClientDto.getDocumentNumber());
         personalClient.setInsertionDate(new Date());
         personalClient.setRegistrationStatus((short) 1);
         return personalClient;
