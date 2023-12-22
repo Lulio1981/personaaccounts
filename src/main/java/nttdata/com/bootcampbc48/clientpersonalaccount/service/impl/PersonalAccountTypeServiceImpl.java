@@ -67,7 +67,7 @@ public class PersonalAccountTypeServiceImpl implements PersonalAccountTypeServic
     @Override
     public Single<AccountType> create(CreateAccountTypeClientDto createAccountTypeClientDto) {
 
-        return repository.findById(createAccountTypeClientDto.getAbbreviation())
+        return repository.findByAbbreviation(createAccountTypeClientDto.getAbbreviation())
                 .map(p -> {
                     throw new BadRequestException(
                             "DocumentNumber",

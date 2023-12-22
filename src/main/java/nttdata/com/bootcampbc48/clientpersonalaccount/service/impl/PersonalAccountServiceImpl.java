@@ -47,12 +47,12 @@ public class PersonalAccountServiceImpl implements PersonalAccountService {
     }
 
     @Override
-    public Flowable<Account> findByIdClientAndRegistrationStatus(String idClient, short registrationStatus) {
-        return repository.findByDocumentNumberAndRegistrationStatus(idClient, registrationStatus)
+    public Flowable<Account> findByDocumentNumberAndRegistrationStatus(String documentNumber, short registrationStatus) {
+        return repository.findByDocumentNumberAndRegistrationStatus(documentNumber, registrationStatus)
                 .switchIfEmpty(Flowable.error(new BadRequestException(
                         "ID",
                         "An error occurred while trying to get an item.",
-                        "The personal client with document number " + idClient + " does not exists.",
+                        "The personal client with document number " + documentNumber + " does not exists.",
                         getClass(),
                         "findByIdClient.switchIfEmpty"
                 )));
@@ -62,7 +62,7 @@ public class PersonalAccountServiceImpl implements PersonalAccountService {
     @Override
     public Single<Account> create(CreateAccountClientDto createAccountClientDto) {
         return repository.findByDocumentNumberAndRegistrationStatus(createAccountClientDto.getDocumentNumber(), createAccountClientDto.getRegistrationStatus())
-                .filter(account -> !account.getIdAccountType().equals("6568f6fb13752c52feeaac6a")
+                .filter(account -> !account.getIdAccountType().equals("6585b0efa4b49232d73023ec")
                         && account.getIdAccountType().equals(createAccountClientDto.getIdAccountType()))
                 .firstElement()
                 .map(account -> {

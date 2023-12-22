@@ -24,11 +24,11 @@ public class PersonalAccountController {
 
     public final PersonalAccountServiceImpl service;
 
-    @GetMapping("/{idClient}/{registrationStatus}")
-    public ResponseEntity<Flowable<Account>> findByIdClient(@PathVariable String idClient, @PathVariable short registrationStatus) {
+    @GetMapping("/{documentNumber}/{registrationStatus}")
+    public ResponseEntity<Flowable<Account>> findByIdClient(@PathVariable String documentNumber, @PathVariable short registrationStatus) {
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(service.findByIdClientAndRegistrationStatus(idClient, registrationStatus));
+                .body(service.findByDocumentNumberAndRegistrationStatus(documentNumber, registrationStatus));
     }
 
     @GetMapping("/find/{id}")
